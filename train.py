@@ -35,8 +35,8 @@ def main(args):
 
     # split dataset in train and val
     train_size = int(0.9 * len(dataset))
-    test_size = len(dataset) - train_size
-    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
+    val_size = len(dataset) - train_size
+    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=8, shuffle=True)
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=8, shuffle=True)
@@ -57,7 +57,7 @@ def main(args):
 
     # training/validation loop
     for epoch in range(10):
-        running_loss = 0.0
+        train_loss = 0.0
         for inputs, masks in train_loader:
             optimizer.zero_grad()
             outputs = model(inputs)
@@ -65,13 +65,23 @@ def main(args):
             loss = criterion(outputs, masks.long().squeeze())
             loss.backward()
             optimizer.step()
-            running_loss += loss.item()
-        epoch_loss = running_loss / len(train_loader)
-        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss:.4f}')
+            train_loss += loss.item()
+        epoch_loss_train = train_loss / len(train_loader)
+
+        val_loss = 0.0
+        model.eval()
+        with torch.inference_mode():
+            for inputs, masks in val_loader:
+                val_outputs = model(inputs)
+                masks = (masks * 255)
+                val_loss = criterion(val_outputs, masks.long().squeeze())
+                val_loss += val_loss.item()
+            epoch_loss_val = val_loss / len(val_loader)
+        print(f'Epoch {epoch + 1}/{num_epochs}, Loss train: {epoch_loss_train:.4f}, Loss validation: {epoch_loss_val:.4f}')
 
 
     # save model
-
+    torch.save(model,'.')
 
     # visualize some results
 

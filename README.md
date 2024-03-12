@@ -43,6 +43,8 @@ upload het naar een git resposetory
 clone de reposity op de snellius server
 run het door sbatch run_main.sh
 
+scur0770@snellius.surf.nl
+
 ### Authors
 
 - T.J.M. Jaspers
