@@ -156,10 +156,10 @@ def main(args):
         # Logging the metrics for the epoch
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss train: {epoch_loss_train:.4f}, Loss val: {epoch_loss_val:.4f}, Mean Dice Score train: {mean_dice_score_epoch:.4f}, Mean Dice Score val: {val_mean_dice_score_epoch:.4f}')
         wandb.log({"loss_train": epoch_loss_train,"loss_val": epoch_loss_val,"Mean Dice Score train":mean_dice_score_epoch,"Mean Dice Score val":val_mean_dice_score_epoch})
-
+        torch.save(model.state_dict(),'./first_model.pth')
     wandb.finish()
     # save model
-    torch.save(model.state_dict(),'./first_model.pth')
+    
 
     # visualize some results
 
