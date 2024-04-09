@@ -25,7 +25,7 @@ def get_arg_parser():
 
 def main(args):
     """define your model, trainingsloop optimitzer etc. here"""
-    scale = 4
+    scale = 8
     # Transform image scale, Tensor and normalize
     transform = transforms.Compose([transforms.Resize((1024//scale, 2048//scale)), transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     target_transforms = transforms.Compose([transforms.Resize((1024//scale, 2048//scale),transforms.InterpolationMode.NEAREST), transforms.ToTensor()])
