@@ -25,7 +25,7 @@ def get_arg_parser():
 
 def main(args):
     """define your model, trainingsloop optimitzer etc. here"""
-    scale = 8
+    scale = 4
     # Transform image scale, Tensor and normalize
     transform = transforms.Compose([transforms.Resize((1024//scale, 2048//scale)), transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     target_transforms = transforms.Compose([transforms.Resize((1024//scale, 2048//scale),transforms.InterpolationMode.NEAREST), transforms.ToTensor()])
@@ -67,48 +67,48 @@ def main(args):
         }
     )
 
-    # def dice_coefficient(y_true, y_pred, num_classes):
-    #     """
-    #     Function to calculate the Dice Coefficient for each class in a multi-class segmentation task.
+    def dice_coefficient(y_true, y_pred, num_classes):
+        """
+        Function to calculate the Dice Coefficient for each class in a multi-class segmentation task.
 
-    #     Parameters:
-    #     y_true: numpy.array, true segmentation mask, where each pixel has an integer value representing the class
-    #     y_pred: numpy.array, predicted segmentation mask, with the same dimensions and class representation as y_true
-    #     num_classes: int, number of classes in the segmentation task
+        Parameters:
+        y_true: numpy.array, true segmentation mask, where each pixel has an integer value representing the class
+        y_pred: numpy.array, predicted segmentation mask, with the same dimensions and class representation as y_true
+        num_classes: int, number of classes in the segmentation task
 
-    #     Returns:
-    #     dice_scores: list, Dice Coefficients for each class
-    #     mean_dice_score: float, mean Dice Coefficient over all classes
-    #     """
+        Returns:
+        dice_scores: list, Dice Coefficients for each class
+        mean_dice_score: float, mean Dice Coefficient over all classes
+        """
         
-    #     dice_scores = []
+        dice_scores = []
         
-    #     for class_id in range(num_classes):
-    #         # Calculate intersection and union for the current class
-    #         true_class = y_true == class_id
-    #         pred_class = y_pred == class_id
-    #         intersection = np.logical_and(true_class, pred_class)
-    #         union = np.logical_or(true_class, pred_class)
+        for class_id in range(num_classes):
+            # Calculate intersection and union for the current class
+            true_class = y_true == class_id
+            pred_class = y_pred == class_id
+            intersection = np.logical_and(true_class, pred_class)
+            union = np.logical_or(true_class, pred_class)
             
-    #         # Calculate Dice score for the current class
-    #         if union.sum() == 0:  # to handle division by zero if there's no ground truth and no prediction for a class
-    #             dice_score = 1.0 if intersection.sum() == 0 else 0.0
-    #         else:
-    #             dice_score = (2. * intersection.sum()) / (true_class.sum() + pred_class.sum())
+            # Calculate Dice score for the current class
+            if union.sum() == 0:  # to handle division by zero if there's no ground truth and no prediction for a class
+                dice_score = 1.0 if intersection.sum() == 0 else 0.0
+            else:
+                dice_score = (2. * intersection.sum()) / (true_class.sum() + pred_class.sum())
             
-    #         dice_scores.append(dice_score)
+            dice_scores.append(dice_score)
         
-    #     # Calculate mean Dice score across all classes
-    #     mean_dice_score = np.mean(dice_scores)
+        # Calculate mean Dice score across all classes
+        mean_dice_score = np.mean(dice_scores)
         
-    #     return dice_scores, mean_dice_score
+        return dice_scores, mean_dice_score
 
     # training/validation loop
     for epoch in range(num_epochs):
         train_loss = 0.0
-        #dice_scores_epoch = []  # List to store dice scores for each batch
+        dice_scores_epoch = []  # List to store dice scores for each batch
         val_loss = 0.0
-        #val_dice_scores_epoch = []
+        val_dice_scores_epoch = []
         
         model.train()
         for inputs, masks in train_loader:
@@ -125,11 +125,11 @@ def main(args):
             train_loss += loss.item()
 
             # Convert model output to class predictions
-            #_, predicted_masks = torch.max(outputs, 1)
-            #dice_scores_batch, _ = dice_coefficient(masks.cpu().numpy(), predicted_masks.cpu().numpy(), num_classes)
-            #dice_scores_epoch.extend(dice_scores_batch)
+            _, predicted_masks = torch.max(outputs, 1)
+            dice_scores_batch, _ = dice_coefficient(masks.cpu().numpy(), predicted_masks.cpu().numpy(), num_classes)
+            dice_scores_epoch.extend(dice_scores_batch)
         epoch_loss_train = train_loss / len(train_loader)
-        #mean_dice_score_epoch = np.mean(dice_scores_epoch)
+        mean_dice_score_epoch = np.mean(dice_scores_epoch)
 
         model.eval()
         with torch.inference_mode():
@@ -143,26 +143,21 @@ def main(args):
                 
                 val_loss += val_loss_batch.item()
 
-                #_, val_predicted_masks = torch.max(val_outputs, 1)
-                #val_dice_scores_batch, _ = dice_coefficient(masks.cpu().numpy(), val_predicted_masks.cpu().numpy(), num_classes)
-                #val_dice_scores_epoch.extend(val_dice_scores_batch)
+                _, val_predicted_masks = torch.max(val_outputs, 1)
+                val_dice_scores_batch, _ = dice_coefficient(masks.cpu().numpy(), val_predicted_masks.cpu().numpy(), num_classes)
+                val_dice_scores_epoch.extend(val_dice_scores_batch)
             
 
 
         # Calculate mean loss and mean dice score for the epoch
         epoch_loss_val = val_loss / len(val_loader)
-        #val_mean_dice_score_epoch = np.mean(val_dice_scores_epoch)  
+        val_mean_dice_score_epoch = np.mean(val_dice_scores_epoch)  
 
         # Logging the metrics for the epoch
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss train: {epoch_loss_train:.4f}, Loss val: {epoch_loss_val:.4f}')
-        wandb.log({"loss_train": epoch_loss_train,"loss_val": epoch_loss_val})
+        wandb.log({"loss_train": epoch_loss_train,"loss_val": epoch_loss_val,"Mean Dice Score train":mean_dice_score_epoch,"Mean Dice Score val":val_mean_dice_score_epoch})
         torch.save(model.state_dict(),'./first_model.pth')
     wandb.finish()
-    # save model
-    
-
-    # visualize some results
-
 
 if __name__ == "__main__":
     # Get the arguments
