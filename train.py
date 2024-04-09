@@ -25,7 +25,7 @@ def get_arg_parser():
 
 def main(args):
     """define your model, trainingsloop optimitzer etc. here"""
-    scale = 8
+    scale = 4
     # Transform image scale, Tensor and normalize
     transform = transforms.Compose([transforms.Resize((1024//scale, 2048//scale)), transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     target_transforms = transforms.Compose([transforms.Resize((1024//scale, 2048//scale),transforms.InterpolationMode.NEAREST), transforms.ToTensor()])
@@ -41,8 +41,8 @@ def main(args):
 
 
 
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=8, num_workers=12, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=8,num_workers=12, shuffle=True)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=4, num_workers=12, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=4,num_workers=12, shuffle=True)
 
     # define model
     model = Model().cuda()
