@@ -25,7 +25,7 @@ def get_arg_parser():
 
 def main(args):
     """define your model, trainingsloop optimitzer etc. here"""
-    scale = 8
+    scale = 6
     # Transform image scale, Tensor and normalize
     transform = transforms.Compose([transforms.Resize((1024//scale, 2048//scale)), transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     target_transforms = transforms.Compose([transforms.Resize((1024//scale, 2048//scale),transforms.InterpolationMode.NEAREST), transforms.ToTensor()])
@@ -49,7 +49,7 @@ def main(args):
 
     # define optimizer and loss function (don't forget to ignore class index 255)
     learning_rate = 0.001
-    num_epochs = 15
+    num_epochs = 30
     criterion = nn.CrossEntropyLoss(ignore_index=255)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     num_classes = 19
@@ -154,7 +154,7 @@ def main(args):
         val_mean_dice_score_epoch = np.mean(val_dice_scores_epoch)  
 
         # Logging the metrics for the epoch
-        print(f'Epoch [{epoch+1}/{num_epochs}], Loss train: {epoch_loss_train:.4f}, Loss val: {epoch_loss_val:.4f}')
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss train: {epoch_loss_train:.4f}, Loss val: {epoch_loss_val:.4f}, Mean Dice Score train: {mean_dice_score_epoch:.4f}, Mean Dice Score val: {val_mean_dice_score_epoch:.4f}')
         wandb.log({"loss_train": epoch_loss_train,"loss_val": epoch_loss_val,"Mean Dice Score train":mean_dice_score_epoch,"Mean Dice Score val":val_mean_dice_score_epoch})
         torch.save(model.state_dict(),'./first_model.pth')
     wandb.finish()
