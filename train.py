@@ -154,7 +154,7 @@ def main(args):
         val_mean_dice_score_epoch = np.mean(val_dice_scores_epoch)  
 
         # Logging the metrics for the epoch
-        print(f'Epoch [{epoch+1}/{num_epochs}], Loss train: {epoch_loss_train:.4f}, Loss val: {epoch_loss_val:.4f}, Mean Dice Score train: {mean_dice_score_epoch:.4f}, Mean Dice Score val: {val_mean_dice_score_epoch:.4f}')
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss train: {epoch_loss_train:.4f}, Loss val: {epoch_loss_val:.4f}')
         wandb.log({"loss_train": epoch_loss_train,"loss_val": epoch_loss_val,"Mean Dice Score train":mean_dice_score_epoch,"Mean Dice Score val":val_mean_dice_score_epoch})
         torch.save(model.state_dict(),'./first_model.pth')
     wandb.finish()
