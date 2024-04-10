@@ -27,7 +27,7 @@ def main(args):
     """define your model, trainingsloop optimitzer etc. here"""
     scale = 4
     # Transform image scale, Tensor and normalize
-    transform = transforms.Compose([transforms.Resize((1024//scale, 2048//scale)), transforms.ToTensor(), transforms.Normalize((0.2869, 0.3251, 0.2839), (0.1870, 0.1902, 0.1872))])
+    transform = transforms.Compose([transforms.Resize((1024//scale, 2048//scale)),transforms.ColorJitter(brightness=(0.8,2),saturation=(0,0.5)), transforms.ToTensor(), transforms.Normalize((0.2869, 0.3251, 0.2839), (0.1870, 0.1902, 0.1872))])
     target_transforms = transforms.Compose([transforms.Resize((1024//scale, 2048//scale),transforms.InterpolationMode.NEAREST), transforms.ToTensor()])
 
     # data loading for snellius
@@ -49,7 +49,7 @@ def main(args):
 
     # define optimizer and loss function (don't forget to ignore class index 255)
     learning_rate = 0.005
-    num_epochs = 30
+    num_epochs = 35
     criterion = nn.CrossEntropyLoss(ignore_index=255)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     num_classes = 19
