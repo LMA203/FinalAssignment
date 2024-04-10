@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 
 """ segmentation model example
 """
@@ -26,6 +27,8 @@ class Model(nn.Module):
         """ Classifier """
         self.outputs = nn.Conv2d(64, 19, kernel_size=1, padding=0)
 
+        self.apply(self._initialize_weights)
+
     def forward(self, inputs):
         """ Encoder """
         s1, p1 = self.e1(inputs)
@@ -46,6 +49,12 @@ class Model(nn.Module):
         outputs = self.outputs(d4)
 
         return outputs
+    
+    def _initialize_weights(self, module):
+        # Apply Xavier initialization to convolutional layers
+        if isinstance(module, (nn.Conv2d, nn.ConvTranspose2d)):
+            init.xavier_uniform_(module.weight)
+            init.constant_(module.bias, 0)
 
 
 class conv_block(nn.Module):
