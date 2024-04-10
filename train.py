@@ -48,7 +48,7 @@ def main(args):
     model = Model().cuda()
 
     # define optimizer and loss function (don't forget to ignore class index 255)
-    learning_rate = 0.005
+    learning_rate = 0.01
     num_epochs = 30
     criterion = nn.CrossEntropyLoss(ignore_index=255)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
