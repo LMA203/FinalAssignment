@@ -49,7 +49,7 @@ def main(args):
 
     # define optimizer and loss function (don't forget to ignore class index 255)
     learning_rate = 0.005
-    num_epochs = 30
+    num_epochs = 22
     criterion = nn.CrossEntropyLoss(ignore_index=255)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     num_classes = 19
