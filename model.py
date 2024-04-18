@@ -6,7 +6,7 @@ import torch.nn.init as init
 """
 
 class Model(nn.Module):
-    def __init__(self, dropout_rate=0.5):
+    def __init__(self, dropout_rate=0.2):
         super().__init__()
 
         """ Encoder """
@@ -51,10 +51,12 @@ class Model(nn.Module):
         return outputs
     
     def _initialize_weights(self, module):
-        # Apply Xavier initialization to convolutional layers
+        # Apply He initialization to convolutional layers
         if isinstance(module, (nn.Conv2d, nn.ConvTranspose2d)):
-            init.xavier_uniform_(module.weight)
-            init.constant_(module.bias, 0)
+            init.kaiming_uniform_(module.weight, nonlinearity='relu')
+            if module.bias is not None:
+                init.constant_(module.bias, 0)
+
 
 
 class conv_block(nn.Module):
