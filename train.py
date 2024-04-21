@@ -84,21 +84,18 @@ def main(args):
         dice_scores = []
         
         for class_id in range(num_classes):
-            # Calculate intersection and union for the current class
             true_class = y_true == class_id
             pred_class = y_pred == class_id
             intersection = np.logical_and(true_class, pred_class)
             union = np.logical_or(true_class, pred_class)
             
-            # Calculate Dice score for the current class
-            if union.sum() == 0:  # to handle division by zero if there's no ground truth and no prediction for a class
+            if union.sum() == 0:
                 dice_score = 1.0 if intersection.sum() == 0 else 0.0
             else:
                 dice_score = (2. * intersection.sum()) / (true_class.sum() + pred_class.sum())
             
             dice_scores.append(dice_score)
         
-        # Calculate mean Dice score across all classes
         mean_dice_score = np.mean(dice_scores)
         
         return dice_scores, mean_dice_score
@@ -106,7 +103,7 @@ def main(args):
     # training/validation loop
     for epoch in range(num_epochs):
         train_loss = 0.0
-        dice_scores_epoch = []  # List to store dice scores for each batch
+        dice_scores_epoch = []
         val_loss = 0.0
         val_dice_scores_epoch = []
         
@@ -146,8 +143,6 @@ def main(args):
                 _, val_predicted_masks = torch.max(val_outputs, 1)
                 val_dice_scores_batch, _ = dice_coefficient(masks.cpu().numpy(), val_predicted_masks.cpu().numpy(), num_classes)
                 val_dice_scores_epoch.extend(val_dice_scores_batch)
-            
-
 
         # Calculate mean loss and mean dice score for the epoch
         epoch_loss_val = val_loss / len(val_loader)

@@ -1,26 +1,39 @@
-# Final Assignment
-
-This repository serves as the starting kit for the 5LSM0 final assignment.
-This assignment is a part of the 5LSM0 course. It involves working with the Cityscapes dataset and training a neural network. The assignment contributes to 50% of your final grade.
+Codalab username: LucManders
+TU/e email: l.manders@student.tue.nl
 
 ## Getting Started
 
 ### Dependencies
 
-We already created a DockerContainer with all dependencies to run on Snellius, in the run_main.sh file we refer to this container. You don't have to changes anything for this.
+This repo is based on the following project/packages:
+- Pytorch
+- Albumentations
 
 ### Installing
 
-To get started with this project, you need to clone the repository to Snellius or your local machine. You can do this by running the following command in your terminal:
+To use this project you need to clone the repository. You can do this by running the following command in your terminal:
 
 ```bash
-git clone https://github.com/5LSM0/FinalAssignment.git
+git clone https://github.com/LMA203/FinalAssignment.git
 ```
 
 After cloning the repository, navigate to the project directory:
 
 ```bash
 cd FinalAssignment
+```
+
+- Step 1: Create virtual environment:
+  
+```
+conda create -n experiments python=3.12
+conda activate experiments
+```
+
+- Step 2: run this command to install the nessecery packages:
+
+```
+pip install -r requirements.txt
 ```
 
 ### File Descriptions
@@ -34,19 +47,10 @@ Here's a brief overview of the files you'll find in this repository:
   
 
 - **model.py:** Defines the neural network architecture.
-
   
-- **train.py:** Contains the code for training the neural network.
+- **train.py:** Contains the code for training the neural network on snellius.
 
-maak het local
-upload het naar een git resposetory
-clone de reposity op de snellius server
-run het door sbatch run_main.sh
+- **train_locally.ipynb:** Contains the code for training the neural network local.
 
-scur0770@snellius.surf.nl
+- **image_augmentation.ipynb** Contains the code to generate the image augmentation.
 
-### Authors
-
-- T.J.M. Jaspers
-- C.H.B. Claessens
-- C.H.J. Kusters
